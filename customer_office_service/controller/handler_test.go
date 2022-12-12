@@ -1,4 +1,4 @@
-package handler
+package controller
 
 import (
 	"fmt"
@@ -12,21 +12,22 @@ import (
 
 func TestHandlers(t *testing.T) {
 	t.Parallel()
+	c := &Controller{}
 
 	tcs := []struct {
 		code    int
 		handler http.HandlerFunc
 	}{
-		{http.StatusOK, CreateUser},
-		{http.StatusOK, GetUserByID},
-		{http.StatusOK, UpdateUser},
-		{http.StatusOK, DeleteUser},
-		{http.StatusOK, GetAllGoods},
-		{http.StatusOK, GetGoodByID},
-		{http.StatusCreated, CreateOrder},
-		{http.StatusOK, UpdateOrder},
-		{http.StatusOK, GetOrderByID},
-		{http.StatusOK, DeleteOrder},
+		{http.StatusOK, c.CreateUser},
+		{http.StatusOK, c.GetUserByID},
+		{http.StatusOK, c.UpdateUser},
+		{http.StatusOK, c.DeleteUser},
+		{http.StatusOK, c.GetAllGoods},
+		{http.StatusOK, c.GetGoodByID},
+		{http.StatusCreated, c.CreateOrder},
+		{http.StatusOK, c.UpdateOrder},
+		{http.StatusOK, c.GetOrderByID},
+		{http.StatusOK, c.DeleteOrder},
 	}
 
 	for _, tc := range tcs {

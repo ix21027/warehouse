@@ -1,0 +1,49 @@
+services:
+  admin_office_service:
+    container_name: admin_office_service
+    build:
+      context: ./admin_office_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./admin_office_service:/usr/src/app
+    command: air
+    ports:
+      - 8000:8000
+    working_dir: /usr/src/app
+    depends_on:
+      - nats
+    restart: unless-stopped
+    networks:
+      - wh-network
+
+  customer_office_service:
+    container_name: customer_office_service
+    build:
+      context: ./customer_office_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./customer_office_service:/usr/src/app
+    command: air
+    ports:
+      - 8001:8000
+    working_dir: /usr/src/app
+    depends_on:
+      - nats
+    restart: unless-stopped
+    networks:
+      - wh-network
+
+  nats:
+    container_name: nats
+    entrypoint: "/nats-server -c nats-server.conf -DV"
+    image: nats
+    ports:
+      - 4222:4222
+      - 6222:6222
+      - 8222:8222
+    networks:
+      - wh-network
+
+networks:
+  wh-network:
+    driver: bridge

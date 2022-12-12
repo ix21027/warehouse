@@ -1,5 +1,9 @@
 package main
 
+import (
+	"customer_office_service/controller"
+)
+
 func main() {
-	runRouter()
+	controller.New().SetRouts().ServeHTTP()
 }
