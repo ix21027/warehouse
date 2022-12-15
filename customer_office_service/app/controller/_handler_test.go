@@ -12,22 +12,22 @@ import (
 
 func TestHandlers(t *testing.T) {
 	t.Parallel()
-	c := &Controller{}
+	c := &HttpController{}
 
 	tcs := []struct {
 		code    int
 		handler http.HandlerFunc
 	}{
-		{http.StatusOK, c.CreateUser},
-		{http.StatusOK, c.GetUserByID},
-		{http.StatusOK, c.UpdateUser},
-		{http.StatusOK, c.DeleteUser},
-		{http.StatusOK, c.GetAllGoods},
-		{http.StatusOK, c.GetGoodByID},
-		{http.StatusCreated, c.CreateOrder},
-		{http.StatusOK, c.UpdateOrder},
-		{http.StatusOK, c.GetOrderByID},
-		{http.StatusOK, c.DeleteOrder},
+		{http.StatusOK, c.Service.UserService.CreateUser},
+		{http.StatusOK, c.Service.UserService.GetUserByID},
+		{http.StatusOK, c.Service.UserService.UpdateUser},
+		{http.StatusOK, c.Service.UserService.DeleteUser},
+		{http.StatusOK, c.Service.GoodService.GetAllGoods},
+		{http.StatusOK, c.Service.GoodService.GetGoodByID},
+		{http.StatusCreated, c.Service.OrderService.CreateOrder},
+		{http.StatusOK, c.Service.OrderService.UpdateOrder},
+		{http.StatusOK, c.Service.OrderService.GetOrderByID},
+		{http.StatusOK, c.Service.OrderService.DeleteOrder},
 	}
 
 	for _, tc := range tcs {
