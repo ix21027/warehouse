@@ -1,37 +1,33 @@
 package service
 
-import (
-	"net/http"
-)
-
 type Service struct {
-	//Good  IGood
-	//Order IOrder
-	User IUser
+	Good  IGood
+	Order IOrder
+	User  IUser
 }
 
-//	type IGood interface {
-//		GetByID(http.ResponseWriter, *http.Request)
-//		GetAll(http.ResponseWriter, *http.Request)
-//	}
-//
-//	type IOrder interface {
-//		Create(http.ResponseWriter, *http.Request)
-//		Update(http.ResponseWriter, *http.Request)
-//		Delete(http.ResponseWriter, *http.Request)
-//		GetByID(http.ResponseWriter, *http.Request)
-//	}
+type IGood interface {
+	GetByID(any)
+	GetAll(any)
+}
+
+type IOrder interface {
+	Create(any)
+	Update(any)
+	Delete(any)
+	GetByID(any)
+}
 type IUser interface {
-	Create(data any)
-	Update(http.ResponseWriter, *http.Request)
-	Delete(http.ResponseWriter, *http.Request)
-	GetByID(http.ResponseWriter, *http.Request)
+	Create(any)
+	Update(any)
+	Delete(any)
+	GetByID(any)
 }
 
 func New() *Service {
 	return &Service{
-		//Good:  NewGoodService(),
-		//Order: NewOrderService(),
-		User: NewUserService(),
+		Good:  NewGoodService(),
+		Order: NewOrderService(),
+		User:  NewUserService(),
 	}
 }

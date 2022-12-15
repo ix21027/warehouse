@@ -1,35 +1,32 @@
 package service
 
 import (
-	"github.com/gorilla/mux"
 	"log"
-	"net/http"
 )
 
-type Order struct {
+type OrderService struct {
 }
 
-func NewOrderService() *Order {
-	return &Order{}
+func NewOrderService() *OrderService {
+	return &OrderService{}
 }
 
 //TODO: check only customer can create order
 
-func (s *Order) Create(w http.ResponseWriter, r *http.Request) {
-	log.Println("create order handler")
-	w.WriteHeader(http.StatusCreated)
+func (s *OrderService) Create(data any) {
+	log.Println("create order service [data]")
 }
 
 //TODO: check that only order owner can update, delete and get order by id
 
-func (s *Order) Update(w http.ResponseWriter, r *http.Request) {
-	log.Println("update order handler [id] : ", mux.Vars(r)["id"])
+func (s *OrderService) Update(data any) {
+	log.Println("update order service [data] : ", data)
 }
 
-func (s *Order) Delete(w http.ResponseWriter, r *http.Request) {
-	log.Println("delete order handler [id] : ", mux.Vars(r)["id"])
+func (s *OrderService) Delete(data any) {
+	log.Println("delete order service [data] : ", data)
 }
 
-func (s *Order) GetByID(w http.ResponseWriter, r *http.Request) {
-	log.Println("get order by id handler [id] : ", mux.Vars(r)["id"])
+func (s *OrderService) GetByID(data any) {
+	log.Println("get order by id service [data] : ", data)
 }
