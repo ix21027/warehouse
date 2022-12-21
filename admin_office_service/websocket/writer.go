@@ -27,7 +27,7 @@ func Writer(conn *websocket.Conn, pongCh chan byte, ch chan string) {
 			}
 
 			if err := conn.WriteMessage(websocket.TextMessage, []byte(message)); err != nil {
-				fmt.Println("!!! Get err w.Write([]byte(message)): ", err)
+				fmt.Println("!!! Get err w.Write([]byte(messaging)): ", err)
 				return
 			}
 

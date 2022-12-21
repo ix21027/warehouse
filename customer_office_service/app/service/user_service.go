@@ -5,14 +5,17 @@ import (
 )
 
 type UserService struct {
+	natsServer INatsServer
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(ns INatsServer) *UserService {
+	return &UserService{
+		ns,
+	}
 }
 
 func (s *UserService) Create(data any) {
-	//s.SendNatsMsg("test", "createGood")
+	s.natsServer.SendMsg("authS.authorize", "Auth me please")
 	log.Println("create user service [data] ", data)
 }
 

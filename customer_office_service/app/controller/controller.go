@@ -4,12 +4,12 @@ import (
 	"customer_office_service/app/service"
 )
 
-type HttpController struct {
+type Controller struct {
 	service *service.Service
 }
 
-func NewHTTPController(service *service.Service) *HttpController {
-	return &HttpController{
+func New(service *service.Service) *Controller {
+	return &Controller{
 		service,
 	}
 }

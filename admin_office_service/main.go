@@ -1,16 +1,27 @@
 package main
 
 import (
-	server "admin_office_service/websocket"
+	"admin_office_service/websocket"
 	"log"
 	"net/http"
+	"os"
 )
 
 func main() {
-	s := server.New()
-	defer s.NatsConn.Close()
+	if err := run(); err != nil {
+		log.Println(err)
+		os.Exit(1)
+	}
+}
 
-	http.HandleFunc("/ws", s.Endpoint)
+func run() error {
+	ws := websocket.New()
+	defer ws.NatsConn.Close()
 
-	log.Fatal(http.ListenAndServe(":8000", nil))
+	http.HandleFunc("/ws", ws.Endpoint)
+
+	if err := http.ListenAndServe(":8000", nil); err != nil {
+		return err
+	}
+	return nil
 }
