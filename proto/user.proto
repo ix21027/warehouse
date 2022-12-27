@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option go_package = "/proto";
+
+service Auth {
+  rpc Authorize(User) returns (AuthResponse);
+  rpc UserInfo(UserReq) returns (UserRes);
+}
+
+message UserReq {
+  string email = 1;
+}
+
+message UserRes {
+  string id = 1;
+  string passwordHash = 2;
+}
+
+message User {
+  string id = 1;
+  string email = 2;
+  string passwordHash = 3;
+}
+
+message AuthResponse {
+  bool success = 1;
+}
