@@ -47,6 +47,8 @@ services:
     volumes:
       - ./auth_service:/usr/src/app
     command: air
+    ports:
+      - 50051:5000
     working_dir: /usr/src/app
     depends_on:
       - nats
@@ -54,6 +56,26 @@ services:
     networks:
       - wh-network
 
+  user_service:
+    container_name: user_service
+    env_file:
+      - env/dev.env
+    build:
+      context: ./user_service
+      dockerfile: Dockerfile
+    volumes:
+      - ./user_service:/usr/src/app
+    command: air
+    ports: 
+      - 50052:5000
+    working_dir: /usr/src/app
+    depends_on:
+      - redis
+      - nats
+      - auth_service
+    restart: unless-stopped
+    networks:
+      - wh-network
 
   nats:
     container_name: nats
@@ -66,6 +88,15 @@ services:
     networks:
       - wh-network
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    networks:
+      - boints-network
 networks:
   wh-network:
     driver: bridge
