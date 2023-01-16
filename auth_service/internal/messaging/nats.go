@@ -59,7 +59,7 @@ func (n *Nats) Stop() {
 	n.Conn.Close()
 }
 
-//func (n *Nats) SendMsg(subj, msg string) {
+//func (n *Nats) SendToUserSvc(subj, msg string) {
 //	if err := n.conn.Publish(subj, []byte(msg)); err != nil {
 //		log.Println(err)
 //	}

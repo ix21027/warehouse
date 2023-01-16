@@ -70,6 +70,7 @@ services:
       - 50052:5000
     working_dir: /usr/src/app
     depends_on:
+      - scylla_node1
       - redis
       - nats
       - auth_service
@@ -87,6 +88,16 @@ services:
       - 8222:8222
     networks:
       - wh-network
+
+  scylla_node1:
+    container_name: scylla_node1
+    image: scylladb/scylla
+    networks:
+      - wh-network
+    command: "--seeds scylla_node1 --smp 1 --memory 256M" # --authenticator=PasswordAuthenticator"
+    restart: unless-stopped
+    ports:
+      - "9042:9042"
 
   redis:
     container_name: redis

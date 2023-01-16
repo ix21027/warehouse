@@ -4,8 +4,8 @@ import (
 	"log"
 )
 
-func (s *Server) SendMsg(subj, msg string) {
-	if err := s.conn.Publish(subj, []byte(msg)); err != nil {
+func (s *Server) SendToUserSvc(method string, payload []byte) {
+	if err := s.conn.Publish("userSvc."+method+"User", payload); err != nil {
 		log.Println(err)
 	}
 }
