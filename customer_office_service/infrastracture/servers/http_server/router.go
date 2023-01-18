@@ -8,6 +8,8 @@ func (s *Server) CreateRouter() {
 	usersR := s.router.PathPrefix("/users").Subrouter()
 	usersR.Path("").Methods(http.MethodPost).HandlerFunc(s.controller.CreateUser)
 	usersR.Path("/{id}").Methods(http.MethodGet).HandlerFunc(s.controller.GetUserByID)
+	usersR.Path("/by_login/{login}").Methods(http.MethodGet).HandlerFunc(s.controller.GetUserByLogin)
+	usersR.Path("/by_status/{status}").Methods(http.MethodGet).HandlerFunc(s.controller.GetUserByStatus)
 	usersR.Path("/{id}").Methods(http.MethodPut).HandlerFunc(s.controller.UpdateUser)
 	usersR.Path("/{id}").Methods(http.MethodDelete).HandlerFunc(s.controller.DeleteUser)
 

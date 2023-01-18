@@ -5,7 +5,7 @@ import (
 )
 
 func (s *Server) SendToUserSvc(method string, payload []byte) {
-	if err := s.conn.Publish("userSvc."+method+"User", payload); err != nil {
+	if err := s.Conn.Publish("userSvc."+method, payload); err != nil {
 		log.Println(err)
 	}
 }

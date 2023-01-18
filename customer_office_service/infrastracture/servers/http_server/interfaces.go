@@ -13,6 +13,8 @@ type IUser interface {
 	UpdateUser(http.ResponseWriter, *http.Request)
 	DeleteUser(http.ResponseWriter, *http.Request)
 	GetUserByID(http.ResponseWriter, *http.Request)
+	GetUserByLogin(http.ResponseWriter, *http.Request)
+	GetUserByStatus(http.ResponseWriter, *http.Request)
 }
 
 type IOrder interface {

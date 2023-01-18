@@ -1,5 +1,7 @@
 package service
 
+import "github.com/nats-io/nats.go"
+
 type Service struct {
 	Good       IGood
 	Order      IOrder
@@ -16,25 +18,7 @@ func NewMain(natsServer INatsServer) *Service {
 	}
 }
 
-type IGood interface {
-	GetByID(any)
-	GetAll(any)
-}
-
-type IOrder interface {
-	CRUDer
-}
-type IUser interface {
-	CRUDer
-}
-
-type CRUDer interface {
-	Create(any)
-	GetByID(any)
-	Update(any)
-	Delete(any)
-}
-
 type INatsServer interface {
 	SendToUserSvc(method string, payload []byte)
+	Subscribe(subj string, cb nats.MsgHandler)
 }

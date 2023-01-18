@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gocql/gocql"
 	"log"
+	"strings"
 )
 
 type User struct {
@@ -51,61 +52,82 @@ func (s *Scylla) CreateUser(name, login, password, userType string) *User {
 	return u
 }
 
-func (s *Scylla) GetUserByLogin(login string) *User {
-	u := &User{}
-	if err := s.client.Query(`SELECT * FROM warehouse.users WHERE login = ? LIMIT 1`, login).Consistency(gocql.One).
-		Scan(&u.ID, &u.Name, &u.Login, &u.Password, &u.Status, &u.Type); err != nil {
-		log.Fatal(err)
+func (s *Scylla) InsertUser(name, login, password, userType string) string {
+	id := gocql.TimeUUID()
+	status := "active"
+	if err := s.client.Query(`
+		INSERT INTO warehouse.users(id, name, login, password, status, type)
+		VALUES (?, ?, ?, ?, ?, ?)`,
+		&id, &name, &login, &password, &status, &userType).Exec(); err != nil {
+		return fmt.Sprintf("%s", err)
 	}
-	return u
-}
-func (s *Scylla) GetUserByID(id gocql.UUID) *User {
-	u := &User{}
-	if err := s.client.Query(`SELECT * FROM warehouse.users WHERE id = ? LIMIT 1`, id).Consistency(gocql.One).
-		Scan(&u.ID, &u.Name, &u.Login, &u.Password, &u.Status, &u.Type); err != nil {
-		log.Fatal(err)
-	}
-	return u
+	return fmt.Sprintf("ID: %s, Name: %s, Login: %s, Password: %s, Type: %s, Status: %s",
+		id, name, login, password, userType, status,
+	)
 }
 
-func (s *Scylla) GetUsersByStatus(status string) []*User {
-	var users []*User
+func (s *Scylla) GetUserByLogin(login string) string {
+	var (
+		id, name, status, typ string
+	)
 
-	scanner := s.client.Query(`SELECT * FROM warehouse.users WHERE status = ?`, status).Iter().Scanner()
+	if err := s.client.Query(`SELECT id, name, status, type FROM warehouse.users WHERE login = ? LIMIT 1`, login).Consistency(gocql.One).
+		Scan(&id, &name, &status, &typ); err != nil {
+		log.Fatal(err)
+	}
+	return "ID: " + id + ", Name: " + name + ", Login: " + login + ", Status: " + status + ", Type: " + typ
+}
+func (s *Scylla) GetUserByID(id string) string {
+	var (
+		name, login, status string
+	)
+	if err := s.client.Query(`SELECT name, login, status FROM warehouse.users WHERE id = ? LIMIT 1`, id).Consistency(gocql.One).
+		Scan(&name, &login, &status); err != nil {
+		return fmt.Sprintf("%s", err)
+	}
+	return "ID:" + id + ", Name: " + name + ", Login: " + login + ", Status: " + status
+}
+
+func (s *Scylla) GetUsersByStatus(status string) string {
+	var usersID []string
+
+	scanner := s.client.Query(`SELECT id FROM warehouse.users WHERE status = ?`, status).Iter().Scanner()
 	for scanner.Next() {
-		u := &User{}
-
-		if err := scanner.Scan(&u.ID, &u.Name, &u.Login, &u.Password, &u.Status, &u.Type); err != nil {
-			log.Fatal(err)
+		var id string
+		if err := scanner.Scan(&id); err != nil {
+			return fmt.Sprintf("%s", err)
 		}
-		fmt.Println("Get User:", u)
-		users = append(users, u)
+		fmt.Println("Get User ID:", id)
+		usersID = append(usersID, id)
 	}
 	// scanner.Err() closes the iterator, so scanner nor iter should be used afterwards.
 	if err := scanner.Err(); err != nil {
-		log.Fatal(err)
+		return fmt.Sprintf("%s", err)
 	}
 
-	return users
+	return strings.Join(usersID, ",")
+
 }
 
-func (s *Scylla) UpdateUserByStatus(status string, id gocql.UUID) {
+func (s *Scylla) UpdateUserByStatus(status, id string) string {
 	switch status {
 	case "ban", "deleted":
 	default:
-		log.Fatal(">UpdateUserByStatus: Invalid status (should be 'ban' or 'deleted')")
+		return ">UpdateUserByStatus: Invalid status (should be 'ban' or 'deleted')"
 	}
 	if err := s.client.Query("UPDATE warehouse.users SET status = ? WHERE id = ?", status, id).Exec(); err != nil {
-		log.Fatal(">UpdateUserByStatus:", err)
+		return fmt.Sprintf("%s", err)
 	}
+	return ""
 }
 
-func (s *Scylla) BanUserByID(id gocql.UUID) {
+func (s *Scylla) BanUserByID(id string) {
 	s.UpdateUserByStatus("ban", id)
 }
 
-func (s *Scylla) DeleteUser(id string) {
+func (s *Scylla) DeleteUser(id string) error {
 	if err := s.client.Query("DELETE FROM warehouse.users WHERE id = ?", id).Exec(); err != nil {
-		log.Fatal(">DeleteUser:", err)
+		return fmt.Errorf(">DeleteUser:", err)
 	}
+	return nil
 }

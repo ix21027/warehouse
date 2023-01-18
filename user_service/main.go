@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
+	"user_service/nats"
 	"user_service/redis"
 	"user_service/scylla"
 	"user_service/server"
@@ -23,7 +25,7 @@ func main() {
 	defer rdb.Close()
 	fillRDB(rdb)
 
-	svc := service.New(rdb)
+	svc := service.New(rdb, s)
 	go server.MakeAndRunGRPCAuthServer(":5000", svc)
 	conn := service.MakeGRPCAuthConn()
 	defer conn.Close()
@@ -32,6 +34,9 @@ func main() {
 		time.Sleep(time.Second * 5)
 		service.AuthUser(ctx, conn, "example@example.com", "PasswordHash*&^&*&^")
 	} // conn is there but without time.Sleep there is an error: could not auth: rpc error: code = Unavailable desc = connection error: desc = "transport: Error while dialing dial tcp 172.18.0.3:5000: connect: connection refused"
+
+	nats := nats.Default(svc)
+	defer nats.Stop()
 
 	<-ctx.Done()
 }
@@ -53,12 +58,12 @@ func fillSDB(s *scylla.Scylla) {
 	}
 
 	log.Println("s.GetGoodByID(good.ID):", s.GetGoodByID(good.ID))
-	log.Println("s.GetUserByID(user.ID):", s.GetUserByID(user.ID))
+	log.Println("s.GetUserByID(user.ID):", s.GetUserByID(fmt.Sprintf("%s", user.ID)))
 
 	log.Println(`s.GetGoodByName("name1"):`, s.GetGoodByName("GoodName_4"))
 	s.UpdateGoodStatusToDeleted(good.ID)
 
-	s.BanUserByID(user.ID)
+	s.BanUserByID(fmt.Sprintf("%s", user.ID))
 	log.Printf(`s.GetUsersByStatus("ban"): `)
 	s.GetUsersByStatus("ban")
 }

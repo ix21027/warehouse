@@ -8,7 +8,7 @@ import (
 )
 
 type Server struct {
-	conn   *nats.Conn
+	Conn   *nats.Conn
 	config *Config
 }
 
@@ -19,7 +19,7 @@ func New() *Server {
 }
 
 func (s *Server) Run() {
-	if s.conn == nil {
+	if s.Conn == nil {
 		s.Connect()
 	}
 	//s.startSubscribers()
@@ -33,7 +33,7 @@ func (s *Server) Connect() {
 		log.Println("err! Connect() :", err)
 		return
 	}
-	s.conn = conn
+	s.Conn = conn
 
 	fmt.Println("Connected to NATS")
 }
@@ -52,6 +52,10 @@ func (s *Server) connect() (*nats.Conn, error) {
 	)
 }
 
+func (s *Server) Subscribe(subj string, cb nats.MsgHandler) {
+	s.Conn.Subscribe(subj, cb)
+}
+
 func (s *Server) Stop() {
-	s.conn.Close()
+	s.Conn.Close()
 }

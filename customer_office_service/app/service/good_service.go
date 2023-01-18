@@ -10,10 +10,17 @@ func NewGoodService() *GoodService {
 	return &GoodService{}
 }
 
-func (s *GoodService) GetByID(data any) {
-	log.Println("get good by id service [data] : ", data)
+type IGood interface {
+	GetByID(string) string
+	GetAll(string) string
 }
 
-func (s *GoodService) GetAll(data any) {
+func (s *GoodService) GetByID(data string) string {
+	log.Println("get good by id service [data] : ", data)
+	return ""
+}
+
+func (s *GoodService) GetAll(data string) string {
 	log.Println("get all goods service [data] : ", data)
+	return ""
 }
