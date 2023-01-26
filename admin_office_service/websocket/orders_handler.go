@@ -1,13 +1,13 @@
 package websocket
 
-func FinishOrder(data any, ch chan string, s *Server) {
+func FinishOrder(data any, n *Server) {
 	ch <- "hello from FinishOrder"
 }
 
-func GetOrderByUser(data any, ch chan string, s *Server) {
+func GetOrderByUser(data any, n *Server) {
 	ch <- "hello from GetOrderByUser"
 }
 
-func GetAllOrders(data any, ch chan string, s *Server) {
+func GetAllOrders(data any, n *Server) {
 	ch <- "hello from GetAllOrders"
 }

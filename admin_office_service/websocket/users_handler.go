@@ -1,18 +1,17 @@
 package websocket
 
-func GetUser(data any, ch chan string, s *Server) {
-	s.SendNatsMsg("sub", "GetUser")
-	ch <- "hello from GetUser"
+func GetUser(data map[string]string, n *Server) {
+	n.SendReqToUserSvcGetByID([]byte(data["id"]))
 }
 
-func GetUsers(data any, ch chan string, s *Server) {
-	ch <- "hello from GetUsers"
+func GetUsersByStatus(data map[string]string, n *Server) {
+	n.SendReqToUserSvcGetByStatus([]byte(data["status"]))
 }
 
-func BanUser(data any, ch chan string, s *Server) {
-	ch <- "hello from BanUser"
-}
+//func BanUser(data map[string]string, n *Server) {
+//	ch <- "hello from BanUser"
+//}
 
-func UnBanUser(data any, ch chan string, s *Server) {
-	ch <- "hello from UnBanUser"
+func GetUsersByLogin(data map[string]string, n *Server) {
+	n.SendReqToUserSvcGetByLogin([]byte(data["login"]))
 }

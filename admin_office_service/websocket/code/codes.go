@@ -7,10 +7,10 @@ const (
 )
 
 const (
-	GET_USER = USERS + iota
-	GET_ALL_USERS
+	GET_USER_BY_ID = USERS + iota
+	GET_USERS_BY_STATUS
+	GET_USERS_BY_LOGIN
 	BAN_USER
-	UNBAN_USER
 )
 
 const (

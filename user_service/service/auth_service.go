@@ -21,7 +21,7 @@ func AuthUser(ctx context.Context, conn *grpc.ClientConn, email, password string
 
 	r, err := c.Authorize(ctx, &proto.User{Email: email, PasswordHash: password})
 	if err != nil {
-		log.Fatalf("could not auth: %v", err)
+		log.Println("could not auth: %v", err)
 	}
 	log.Printf("Auth result (true):(%v)", r.GetSuccess())
 }

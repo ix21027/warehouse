@@ -5,16 +5,16 @@ import (
 	"time"
 )
 
-func (s *Server) RunListener(conn *websocket.Conn) error {
+func (s *Server) RunListener(conn *websocket.Conn, ch chan string) error {
 	pongCh := make(chan byte)
 
 	if err := setUpConnHandler(conn, pongCh); err != nil {
 		return err
 	}
 
-	ch := make(chan string)
+	//ch := make(chan string)
 
-	go Reader(conn, ch, s)
+	go Reader(conn, s)
 	go Writer(conn, pongCh, ch)
 
 	for {

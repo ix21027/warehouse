@@ -4,37 +4,37 @@ import (
 	"admin_office_service/websocket/code"
 )
 
-func Route(reqData ReqData, ch chan string, s *Server) {
+func Route(reqData ReqData, n *Server) {
 	switch reqData.Code {
-	case code.GET_USER:
-		GetUser(reqData.Data, ch, s)
+	case code.GET_USER_BY_ID:
+		GetUser(reqData.Data, n)
 
-	case code.GET_ALL_USERS:
-		GetUsers(reqData.Data, ch, s)
+	case code.GET_USERS_BY_STATUS:
+		GetUsersByStatus(reqData.Data, n)
 
-	case code.BAN_USER:
-		BanUser(reqData.Data, ch, s)
+	case code.GET_USERS_BY_LOGIN:
+		GetUsersByLogin(reqData.Data, n)
 
-	case code.UNBAN_USER:
-		UnBanUser(reqData.Data, ch, s)
+	//case code.BAN_USER:
+	//	BanUser(reqData.Data, n)
 
 	case code.CREATE_GOOD:
-		CreateGood(reqData.Data, ch, s)
+		CreateGood(reqData.Data, n)
 
 	case code.UPDATE_GOOD:
-		UpdateGood(reqData.Data, ch, s)
+		UpdateGood(reqData.Data, n)
 
 	case code.DELETE_GOOD:
-		DeleteGood(reqData.Data, ch, s)
+		DeleteGood(reqData.Data, n)
 
 	case code.FINISH_ORDER:
-		FinishOrder(reqData.Data, ch, s)
+		FinishOrder(reqData.Data, n)
 
 	case code.GET_ORDERS_BY_USER:
-		GetOrderByUser(reqData.Data, ch, s)
+		GetOrderByUser(reqData.Data, n)
 
 	case code.GET_ALL_ORDERS:
-		GetAllOrders(reqData.Data, ch, s)
+		GetAllOrders(reqData.Data, n)
 
 	default:
 		ch <- "not supported route error"

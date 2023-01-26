@@ -1,14 +1,14 @@
 package websocket
 
-func CreateGood(data any, ch chan string, s *Server) {
-	s.SendNatsMsg("sub", "createGood")
+func CreateGood(data any, n *Server) {
+	n.SendNatsMsg("sub", "createGood")
 	ch <- "hello from CreateGood"
 }
 
-func UpdateGood(data any, ch chan string, s *Server) {
+func UpdateGood(data any, s *Server) {
 	ch <- "hello from UpdateGood"
 }
 
-func DeleteGood(data any, ch chan string, s *Server) {
+func DeleteGood(data any, s *Server) {
 	ch <- "hello from DeleteGood"
 }

@@ -75,7 +75,14 @@ func (n *Nats) startSubscribers() {
 	//GetUserByID
 	if _, err := n.Conn.Subscribe("userSvc.GetByID", func(m *nats.Msg) {
 		res := n.svc.GetUserByID(fmt.Sprintf("%s", m.Data))
-		n.Conn.Publish("customerOfficeSvc.GetByIDResp", []byte(res))
+		service := m.Header.Get("from")
+
+		alowedServices := map[string]struct{}{"customerOfficeSvc": {}, "adminOfficeSvc": {}}
+		if _, ok := alowedServices[service]; !ok {
+			log.Println("there is no such service in allowed")
+			return
+		}
+		n.SendTo(service, "GetByIDResp", []byte(res))
 	}); err != nil {
 		log.Println(err, "ERROR in startSubscribers()")
 	}
@@ -83,7 +90,7 @@ func (n *Nats) startSubscribers() {
 	//GetUserByStatus
 	if _, err := n.Conn.Subscribe("userSvc.GetByStatus", func(m *nats.Msg) {
 		res := n.svc.GetUserByStatus(fmt.Sprintf("%s", m.Data))
-		n.Conn.Publish("customerOfficeSvc.GetByStatusResp", []byte(res))
+		n.SendTo(m.Header.Get("from"), "GetByStatusResp", []byte(res))
 	}); err != nil {
 		log.Println(err, "ERROR in startSubscribers()")
 	}
@@ -91,7 +98,7 @@ func (n *Nats) startSubscribers() {
 	//GetUserByLogin
 	if _, err := n.Conn.Subscribe("userSvc.GetByLogin", func(m *nats.Msg) {
 		res := n.svc.GetUserByLogin(fmt.Sprintf("%s", m.Data))
-		n.Conn.Publish("customerOfficeSvc.GetByLoginResp", []byte(res))
+		n.SendTo(m.Header.Get("from"), "GetByLoginResp", []byte(res))
 	}); err != nil {
 		log.Println(err, "ERROR in startSubscribers()")
 	}
@@ -99,7 +106,7 @@ func (n *Nats) startSubscribers() {
 	//DeleteUser
 	if _, err := n.Conn.Subscribe("userSvc.Delete", func(m *nats.Msg) {
 		res := n.svc.DeleteUser(fmt.Sprintf("%s", m.Data))
-		n.Conn.Publish("customerOfficeSvc.DeleteResp", []byte(res))
+		n.SendTo(m.Header.Get("from"), "DeleteResp", []byte(res))
 	}); err != nil {
 		log.Println(err, "ERROR in startSubscribers()")
 	}
@@ -111,9 +118,22 @@ func (n *Nats) startSubscribers() {
 	}); err != nil {
 		log.Println(err, "ERROR in startSubscribers()")
 	}
+
+	//***** GET REQ FROM ADMIN OFFICE SERVICE *****//
+	if _, err := n.Conn.Subscribe("userSvc.Update", func(m *nats.Msg) {
+		res := n.svc.UpdateUser(fmt.Sprintf("%s", m.Data))
+		n.Conn.Publish("customerOfficeSvc.UpdateResp", []byte(res))
+	}); err != nil {
+		log.Println(err, "ERROR in startSubscribers()")
+	}
 }
 
-//type Svc struct {
-//	Sub, Pub string
-//	SvcMethod service.UserService
-//}
+func (n *Nats) SendTo(svc, method string, payload []byte) {
+	m := nats.NewMsg(svc + "." + method)
+	m.Header.Add("from", "userSvc")
+	m.Header.Add("ResponseCode", method)
+	m.Data = payload
+	if err := n.Conn.PublishMsg(m); err != nil {
+		log.Println("Error <SendTo>:", err)
+	}
+}

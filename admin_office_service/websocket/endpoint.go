@@ -11,6 +11,7 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
+var ch = make(chan string)
 
 func (s *Server) Endpoint(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
@@ -30,7 +31,7 @@ func (s *Server) Endpoint(w http.ResponseWriter, r *http.Request) {
 		}
 	}(conn)
 
-	if err := s.RunListener(conn); err != nil {
+	if err := s.RunListener(conn, ch); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }

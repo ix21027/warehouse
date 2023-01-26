@@ -8,11 +8,11 @@ import (
 )
 
 type ReqData struct {
-	Code uint16 `json:"code"`
-	Data any    `json:"data"`
+	Code int               `json:"code"`
+	Data map[string]string `json:"data"`
 }
 
-func Reader(conn *websocket.Conn, ch chan string, s *Server) {
+func Reader(conn *websocket.Conn, n *Server) {
 	for {
 		_, msg, err := conn.ReadMessage()
 		if err != nil {
@@ -22,9 +22,9 @@ func Reader(conn *websocket.Conn, ch chan string, s *Server) {
 
 		var data ReqData
 		if err := json.Unmarshal(msg, &data); err != nil {
-			fmt.Println("Err reader unmarshal msg: ", err)
+			fmt.Println("Err reader unmarshal msga: ", err)
 			return
 		}
-		Route(data, ch, s)
+		Route(data, n)
 	}
 }
